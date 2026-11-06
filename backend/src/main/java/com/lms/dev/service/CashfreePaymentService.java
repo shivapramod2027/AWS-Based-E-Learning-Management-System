@@ -102,7 +102,8 @@ public class CashfreePaymentService {
         if ("demo".equalsIgnoreCase(paymentMode)) {
             savePendingPayment(user, course, orderId);
             return new CheckoutSessionResponse(
-                    orderId, null, "demo", frontendBaseUrl + "/payment/demo?order_id=" + orderId);
+                    orderId, null, "demo", frontendBaseUrl + "/payment/demo?order_id=" + orderId,
+                    course.getCourse_id(), course.getCourse_name(), course.getPrice(), CURRENCY);
         }
         if (!"cashfree".equalsIgnoreCase(paymentMode)) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -140,7 +141,8 @@ public class CashfreePaymentService {
         }
 
         savePendingPayment(user, course, orderId);
-        return new CheckoutSessionResponse(orderId, paymentSessionId, normalizedEnvironment(), null);
+        return new CheckoutSessionResponse(orderId, paymentSessionId, normalizedEnvironment(), null,
+                course.getCourse_id(), course.getCourse_name(), course.getPrice(), CURRENCY);
     }
 
     @Transactional

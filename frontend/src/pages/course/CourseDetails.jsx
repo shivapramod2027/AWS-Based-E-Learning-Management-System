@@ -66,7 +66,9 @@ function CourseDetails() {
           if (checkoutUrl.origin !== window.location.origin) {
             throw new Error("Demo checkout URL must stay on this site.");
           }
-          navigate(`${checkoutUrl.pathname}${checkoutUrl.search}${checkoutUrl.hash}`);
+          navigate(`${checkoutUrl.pathname}${checkoutUrl.search}${checkoutUrl.hash}`, {
+            state: { checkout: checkout.data },
+          });
           return;
         }
         const cashfree = await load({ mode: checkout.data.mode });
@@ -80,7 +82,7 @@ function CourseDetails() {
         });
       } catch (checkoutError) {
         console.error("Could not open Cashfree checkout:", checkoutError);
-        setError("Could not open secure checkout. Please try again.");
+        setError("Could not open checkout. Please try again.");
       } finally {
         setStartingCheckout(false);
       }
@@ -154,7 +156,7 @@ function CourseDetails() {
               <p className="mt-2 text-3xl font-bold text-slate-900">{Number(course.price) > 0 ? `₹${course.price}` : "Free"}</p>
               {Number(course.price) > 0 && !enrolled && (
                 <label className="mt-4 block text-sm font-medium text-slate-700" htmlFor="checkout-phone">
-                  Mobile number (needed for Cashfree; optional in demo mode)
+                  Mobile number (only needed for Cashfree; leave blank for demo)
                   <input
                     id="checkout-phone"
                     type="tel"
@@ -171,7 +173,7 @@ function CourseDetails() {
                 </label>
               )}
               <button type="button" onClick={enrolled ? () => navigate(`/learn/${id}`) : enroll} disabled={enrolling || startingCheckout} className="mt-5 w-full rounded-lg bg-indigo-700 px-5 py-3 font-semibold text-white hover:bg-indigo-800 disabled:opacity-60">
-                {enrolling ? "Enrolling…" : startingCheckout ? "Opening secure checkout…" : enrolled ? "Continue learning" : Number(course.price) > 0 ? `Buy course · ₹${course.price}` : "Enroll in course"}
+                {enrolling ? "Enrolling…" : startingCheckout ? "Starting checkout…" : enrolled ? "Continue learning" : Number(course.price) > 0 ? `Continue to payment · ₹${course.price}` : "Enroll in course"}
               </button>
               <ul className="mt-5 space-y-3 text-sm text-slate-600">
                 <li>✓ Access enrolled lessons and course resources</li>

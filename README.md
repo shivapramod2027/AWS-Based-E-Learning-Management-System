@@ -145,7 +145,7 @@ Empty internally managed courses receive an interactive starter syllabus on back
 
 ### Cashfree course payments
 
-By default, paid-course checkout uses a clearly labeled local demo payment (`PAYMENT_MODE=demo`). It makes no external payment and collects no money; a signed-in user can simulate a successful payment to complete the college-project flow. The backend creates a pending order and marks it paid only after the user confirms the simulation. Do not use demo mode for real sales or production deployments.
+By default, paid-course checkout uses a clearly labeled local demo payment (`PAYMENT_MODE=demo`). The flow shows the course, listed price, and order reference; the learner then chooses **Simulate payment and enroll** to record a simulated success and activate enrollment. It does not request card details, contact a payment provider, or collect money. The backend creates a pending order and marks it paid only after the signed-in order owner confirms the simulation. Do not use demo mode for real sales or production deployments.
 
 To use real payments instead, explicitly set `PAYMENT_MODE=cashfree`, set `CASHFREE_CLIENT_ID` and `CASHFREE_CLIENT_SECRET` from the Cashfree merchant dashboard, and choose `CASHFREE_ENVIRONMENT=sandbox` or `production`. Keep credentials on the backend; never put them in frontend configuration or source control. Cashfree Checkout requires a customer mobile number. Configure Cashfree webhooks at `POST https://your-api-host/api/payments/webhook`; webhook signatures are verified using the Cashfree client secret. The backend verifies Cashfree order status, amount, and currency before enrollment. Free courses continue to enroll without checkout.
 
