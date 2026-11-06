@@ -66,7 +66,7 @@ function Login() {
           <div className="bg-white shadow-2xl rounded-2xl p-8 border border-gray-100">
             {sessionExpired && (
               <p className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900" role="status">
-                Your sign-in expired before checkout started. Sign in again, then return to the course to continue.
+                Your sign-in expired. Sign in again to continue your course.
               </p>
             )}
             <form autoComplete="off" onSubmit={login} className="space-y-6">

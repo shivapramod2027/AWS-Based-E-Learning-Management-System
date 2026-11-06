@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Confetti from "react-dom-confetti";
@@ -33,6 +33,7 @@ const Certificate = () => {
   const [certificate, setCertificate] = useState(null);
   
   const navigate = useNavigate();
+  const location = useLocation();
   const { courseId } = useParams();
   const authToken = localStorage.getItem("token");
   const userId = localStorage.getItem("id");
@@ -50,6 +51,19 @@ const Certificate = () => {
   }) : "";
 
   useEffect(() => {
+    const issuedCertificate = location.state?.certificate;
+    if (issuedCertificate) {
+      setCertificate(issuedCertificate);
+      setUserDetails({ username: issuedCertificate.learnerName });
+      setCourse((currentCourse) => ({
+        ...currentCourse,
+        course_name: issuedCertificate.courseName,
+      }));
+      setShowConfetti(true);
+      setLoading(false);
+      return;
+    }
+
     if (!authToken) {
       navigate("/login");
       return;
@@ -92,7 +106,7 @@ const Certificate = () => {
     };
 
     fetchData();
-  }, [authToken, navigate, userId, courseId]);
+  }, [authToken, navigate, userId, courseId, location.state]);
 
   const handleDownloadPDF = async () => {
     setPdfDownloading(true);

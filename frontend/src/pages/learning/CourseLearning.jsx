@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactPlayer from "react-player";
-import { ArrowLeft, ArrowRight, CheckCircle2, Download, ExternalLink, PlayCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Award, CheckCircle2, Download, ExternalLink, PlayCircle } from "lucide-react";
 import Navbar from "../../Components/common/Navbar";
 import { courseService } from "../../api/course.service";
 import { courseContentService } from "../../api/courseContent.service";
@@ -11,6 +11,7 @@ function CourseLearning() {
   const [course, setCourse] = useState(null);
   const [modules, setModules] = useState([]);
   const [progress, setProgress] = useState(null);
+  const [completionCertificate, setCompletionCertificate] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -54,6 +55,22 @@ function CourseLearning() {
       return;
     }
     setError("");
+    const certificate = result.data?.certificate;
+    if (certificate) {
+      setCompletionCertificate(certificate);
+      setModules((currentModules) => currentModules.map((module) => ({
+        ...module,
+        lessons: module.lessons.map((lesson) => lesson.id === selectedLesson.id
+          ? { ...lesson, completed: true }
+          : lesson),
+      })));
+      setProgress((currentProgress) => ({
+        totalLessons: currentProgress?.totalLessons || lessons.length,
+        completedLessons: currentProgress?.totalLessons || lessons.length,
+        progressPercent: 100,
+      }));
+      return;
+    }
     await loadContent();
     const nextLesson = lessons[selectedIndex + 1];
     if (nextLesson) setSelectedId(nextLesson.id);
@@ -186,7 +203,17 @@ function CourseLearning() {
                 ))}
               </div>
               {progress?.progressPercent === 100 && (
-                <Link to={`/certificate/${courseId}`} className="mt-5 block rounded-lg bg-green-700 px-4 py-2.5 text-center font-semibold text-white hover:bg-green-800">Get completion certificate</Link>
+                <div className="mt-5 rounded-lg bg-green-50 p-4 text-center">
+                  <Award className="mx-auto text-green-700" size={28} aria-hidden="true" />
+                  <p className="mt-2 font-semibold text-green-900">Course completed! Your certificate is ready.</p>
+                  <Link
+                    to={`/certificate/${courseId}`}
+                    state={completionCertificate ? { certificate: completionCertificate } : undefined}
+                    className="mt-3 block rounded-lg bg-green-700 px-4 py-2.5 text-center font-semibold text-white hover:bg-green-800"
+                  >
+                    View and download certificate
+                  </Link>
+                </div>
               )}
             </aside>
           </div>

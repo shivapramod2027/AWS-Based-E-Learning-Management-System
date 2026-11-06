@@ -1,9 +1,11 @@
 package com.lms.dev.service;
 
 import com.lms.dev.dto.CourseModuleView;
+import com.lms.dev.dto.CertificateView;
 import com.lms.dev.dto.LessonRequest;
 import com.lms.dev.dto.LessonView;
 import com.lms.dev.dto.LessonProgressView;
+import com.lms.dev.dto.LessonCompletionResult;
 import com.lms.dev.dto.ModuleRequest;
 import com.lms.dev.entity.Course;
 import com.lms.dev.entity.CourseModule;
@@ -39,6 +41,7 @@ public class CourseContentService {
     private final LearningRepository learningRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final CertificateService certificateService;
 
     public List<CourseModuleView> getModules(UUID courseId, UUID userId) {
         getCourse(courseId);
@@ -132,7 +135,7 @@ public class CourseContentService {
     }
 
     @Transactional
-    public LessonView completeLesson(UUID lessonId, UUID userId) {
+    public LessonCompletionResult completeLesson(UUID lessonId, UUID userId) {
         Lesson lesson = getLesson(lessonId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -148,10 +151,12 @@ public class CourseContentService {
         }
         long totalLessons = lessonRepository.countByModule_Course_Course_id(course.getCourse_id());
         long completedLessons = completionRepository.countCompletedByUserAndCourse(userId, course.getCourse_id());
+        CertificateView certificate = null;
         if (totalLessons > 0 && completedLessons >= totalLessons) {
             notificationService.notifyCourseCompleted(user, course);
+            certificate = certificateService.issue(userId, course.getCourse_id());
         }
-        return LessonView.from(lesson, true);
+        return new LessonCompletionResult(LessonView.from(lesson, true), certificate);
     }
 
     private void notifyNewLesson(Lesson lesson) {

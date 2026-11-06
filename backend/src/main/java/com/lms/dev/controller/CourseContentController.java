@@ -2,6 +2,7 @@ package com.lms.dev.controller;
 
 import com.lms.dev.dto.CourseModuleView;
 import com.lms.dev.dto.LessonProgressView;
+import com.lms.dev.dto.LessonCompletionResult;
 import com.lms.dev.dto.LessonRequest;
 import com.lms.dev.dto.LessonView;
 import com.lms.dev.dto.ModuleRequest;
@@ -76,7 +77,7 @@ public class CourseContentController {
 
     @PostMapping("/api/lessons/{lessonId}/complete")
     @PreAuthorize("hasRole('USER')")
-    public LessonView completeLesson(@PathVariable UUID lessonId,
+    public LessonCompletionResult completeLesson(@PathVariable UUID lessonId,
             @AuthenticationPrincipal UserPrincipal principal) {
         return contentService.completeLesson(lessonId, principal.getId());
     }

@@ -38,6 +38,7 @@ public class ProgressService {
     private final NotificationService notificationService;
     private final LessonCompletionRepository lessonCompletionRepository;
     private final LessonRepository lessonRepository;
+    private final CertificateService certificateService;
 
     public ResponseEntity<String> updateProgress(ProgressRequest request) {
         UUID userId = request.getUserId();
@@ -61,6 +62,7 @@ public class ProgressService {
                         || lessonCompletionRepository.countCompletedByUserAndCourse(userId, courseId) >= totalLessons;
                 if (!wasCompleted && duration > 0 && playedTime >= duration && allLessonsCompleted) {
                     notificationService.notifyCourseCompleted(user, course);
+                    certificateService.issue(userId, courseId);
                 }
                 return ResponseEntity.ok("success");
             } else {

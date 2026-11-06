@@ -28,7 +28,7 @@ LearnSphere is a cloud-based Learning Management System (LMS) built with React.j
 - Students can mark lessons complete and continue from their course-learning page.
 
 ### Certificate Generation
-- Automatic certificate generation upon course completion.
+- Automatic certificate generation when the learner completes the final course lesson (or finishes video progress for a course without lessons).
 - Personalized certificates with user details.
 
 ### Discussion Forum
@@ -141,7 +141,7 @@ The optional course catalog expects a JSON array, or an array under `results`, `
 
 The application uses Hibernate `ddl-auto: update` to create or update new tables and columns at startup. Back up the database before deploying schema changes. Reminder emails are sent only when SMTP is configured; SMTP connection/read/write timeouts default to 10 seconds. Reminder times use the backend server's local timezone.
 
-Empty internally managed courses receive an interactive starter syllabus on backend startup (`SEED_DEMO_CONTENT=true` by default). It includes guided exercises and a mini project; existing lessons and externally hosted courses are left unchanged. Learners can navigate lessons, mark them complete, and track progress.
+Empty internally managed courses receive an interactive starter syllabus on backend startup (`SEED_DEMO_CONTENT=true` by default). It includes guided exercises and a mini project; existing lessons and externally hosted courses are left unchanged. Learners can navigate lessons, mark them complete, and track progress. When the course is complete, the backend automatically creates a uniquely verifiable certificate, which learners can view and download from the course page.
 
 ### Cashfree course payments
 
@@ -185,71 +185,3 @@ Students can enroll in courses, use lesson-based course content, submit assignme
 - Open issues to report bugs or suggest features
 - Submit pull requests to improve the project
 - Feedback and contributions are highly appreciated
-
-## Site Images
-**Login:**
-
-<img width="1512" height="861" alt="image" src="https://github.com/user-attachments/assets/42b6bf7b-b974-45b4-98d1-54b09de79ec1" />
-
-
-
-**Register:**
-<img width="1512" height="858" alt="image" src="https://github.com/user-attachments/assets/3e033d24-5a75-4169-bbbc-4f1506b30b80" />
-
-
-
-**Courses:**
-<img width="1512" height="863" alt="image" src="https://github.com/user-attachments/assets/d9b5bf85-da92-47de-af60-dd038619bd46" />
-
-
-
-**Profile:**
-<img width="1504" height="857" alt="image" src="https://github.com/user-attachments/assets/16d6d7af-b24f-43a9-87e7-cb2b4877a708" />
-<img width="1512" height="858" alt="image" src="https://github.com/user-attachments/assets/946ac434-6511-4edf-922f-c44bdd8ec510" />
-
-
-
-**Learnings:**
-<img width="1512" height="862" alt="image" src="https://github.com/user-attachments/assets/73e52319-8e91-49ff-aa0b-3f92c9fad7c4" />
-
-
-
-**Course learning:**
-<img width="1512" height="860" alt="image" src="https://github.com/user-attachments/assets/ba9f6d1a-c1ce-4850-adba-059f84a57130" />
-
-
-
-**Assessment:**
-<img width="1512" height="861" alt="image" src="https://github.com/user-attachments/assets/669a7fe6-f6c9-4be7-93a6-a65daf971c43" />
-
-
-
-**Certificate:**
-<img width="1512" height="863" alt="image" src="https://github.com/user-attachments/assets/10f71d60-adbd-43b4-bde4-f9a793930811" />
-
-
-
-**Dashboard:**
-<img width="1512" height="864" alt="2025-10-23_15-57-52" src="https://github.com/user-attachments/assets/3f2101fa-fec2-409c-94cc-8720b90da1f2" />
-<img width="1512" height="865" alt="2025-10-23_15-58-03" src="https://github.com/user-attachments/assets/8f2c1f15-067d-4f81-abc3-9cb5730075c1" />
-<img width="1512" height="862" alt="2025-10-23_15-58-10" src="https://github.com/user-attachments/assets/edd2ac8b-7e7f-4a55-9517-e5e75eac337d" />
-<img width="1512" height="862" alt="image" src="https://github.com/user-attachments/assets/68cfeccf-b30b-44dc-80fa-e738ea976399" />
-
-
-
-**Course Management:**
-<img width="1512" height="861" alt="image" src="https://github.com/user-attachments/assets/2903c72c-029e-4ec3-a271-ecbe370db64b" />
-<img width="1512" height="861" alt="image" src="https://github.com/user-attachments/assets/c3ef2b07-1b13-4ba8-ab55-3c68ebf9ec78" />
-
-
-
-**Assessment Management:**
-<img width="1511" height="863" alt="image" src="https://github.com/user-attachments/assets/0cca862b-b7bc-4e5d-8483-286e9d3a6cad" />
-<img width="1512" height="862" alt="image" src="https://github.com/user-attachments/assets/925426e7-0183-49fc-8cbf-00c91b67092a" />
-
-
-
-**Home page:**
-<img width="1512" height="859" alt="image" src="https://github.com/user-attachments/assets/d7d5cd46-8981-48cf-bf0a-5efe43b7e58c" />
-<img width="1512" height="851" alt="image" src="https://github.com/user-attachments/assets/ee1fcd65-4c35-45ae-9ead-2eeabdad3042" />
-<img width="1512" height="856" alt="image" src="https://github.com/user-attachments/assets/3a1d890d-e597-40fb-9fba-481a903818ea" />
