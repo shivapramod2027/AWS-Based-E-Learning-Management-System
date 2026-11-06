@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Confetti from "react-dom-confetti";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +17,6 @@ import {
   faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 import { faLinkedin, faTwitter, faFacebook } from "@fortawesome/free-brands-svg-icons";
-import img from '../../assets/images/logo.jpg';
 import seal from '../../assets/images/seal.png';
 import { courseService } from "../../api/course.service";
 import { profileService } from "../../api/profile.service";
@@ -28,6 +26,7 @@ const Certificate = () => {
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pdfDownloading, setPdfDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [error, setError] = useState(null);
   const [certificate, setCertificate] = useState(null);
@@ -108,58 +107,89 @@ const Certificate = () => {
     fetchData();
   }, [authToken, navigate, userId, courseId, location.state]);
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = () => {
     setPdfDownloading(true);
+    setDownloadError("");
     
     try {
-      const certificateElement = document.getElementById("certificate");
-      
-      if (!certificateElement) {
-        throw new Error("Certificate element not found");
-      }
+      const pdf = new jsPDF("landscape", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const center = pageWidth / 2;
+      const learnerName = certificate?.learnerName || userDetails?.username || "Student";
+      const courseName = course?.course_name || "Course";
+      const issuedDate = currentDate || "Completion date";
+      const verificationCode = certificate?.verificationCode || "Not available";
 
-      const buttonsContainer = document.getElementById("certificate-buttons");
-      if (buttonsContainer) {
-        buttonsContainer.style.display = "none";
-      }
-
-      const canvas = await html2canvas(certificateElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff"
+      pdf.setProperties({
+        title: `${courseName} Certificate`,
+        subject: "LearnSphere course completion certificate",
+        author: "LearnSphere",
       });
 
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("landscape", "mm", "a4");
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgAspectRatio = canvas.width / canvas.height;
-      const pdfAspectRatio = pdfWidth / pdfHeight;
+      pdf.setFillColor(255, 253, 245);
+      pdf.rect(0, 0, pageWidth, 210, "F");
+      pdf.setDrawColor(224, 176, 55);
+      pdf.setLineWidth(1.5);
+      pdf.roundedRect(8, 8, pageWidth - 16, 194, 5, 5, "S");
+      pdf.setDrawColor(242, 218, 151);
+      pdf.setLineWidth(0.5);
+      pdf.roundedRect(13, 13, pageWidth - 26, 184, 4, 4, "S");
 
-      let imgWidth, imgHeight;
-      if (imgAspectRatio > pdfAspectRatio) {
-        imgWidth = pdfWidth;
-        imgHeight = pdfWidth / imgAspectRatio;
-      } else {
-        imgHeight = pdfHeight;
-        imgWidth = pdfHeight * imgAspectRatio;
-      }
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(18);
+      pdf.setTextColor(67, 56, 202);
+      pdf.text("LearnSphere", center, 30, { align: "center" });
 
-      const x = (pdfWidth - imgWidth) / 2;
-      const y = (pdfHeight - imgHeight) / 2;
+      pdf.setFontSize(28);
+      pdf.setTextColor(217, 153, 0);
+      pdf.text("Certificate of Achievement", center, 50, { align: "center" });
 
-      pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight);
-      pdf.save(`${userDetails?.username || 'Certificate'}_${course?.course_name || 'Course'}_Certificate.pdf`);
+      pdf.setDrawColor(235, 190, 75);
+      pdf.line(45, 59, pageWidth - 45, 59);
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(13);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text("This is to proudly certify that", center, 73, { align: "center" });
 
-      // Show buttons again
-      if (buttonsContainer) {
-        buttonsContainer.style.display = "flex";
-      }
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(25);
+      pdf.setTextColor(109, 40, 217);
+      pdf.text(pdf.splitTextToSize(learnerName, pageWidth - 60), center, 88, { align: "center" });
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(13);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text("has successfully completed the course", center, 102, { align: "center" });
+
+      pdf.setFillColor(236, 253, 245);
+      pdf.setDrawColor(134, 239, 172);
+      pdf.roundedRect(38, 109, pageWidth - 76, 29, 4, 4, "FD");
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(19);
+      pdf.setTextColor(5, 150, 105);
+      pdf.text(pdf.splitTextToSize(courseName, pageWidth - 92), center, 127, { align: "center" });
+
+      pdf.setFont("helvetica", "italic");
+      pdf.setFontSize(11);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text("Demonstrating dedication, skill, and mastery of the subject matter.", center, 148, { align: "center" });
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(10);
+      pdf.setTextColor(75, 85, 99);
+      pdf.text(`Date issued: ${issuedDate}`, 48, 169);
+      pdf.text(`Certificate ID: ${verificationCode}`, 48, 178);
+      pdf.setFontSize(9);
+      pdf.text(`Verify: ${window.location.origin}/verify/${verificationCode}`, 48, 187);
+
+      const filename = `${userDetails?.username || "Certificate"}_${course?.course_name || "Course"}_Certificate.pdf`
+        .replace(/[<>:"/\\|?*]+/g, "_");
+      pdf.save(filename);
     } catch (err) {
       console.error("Error generating PDF:", err);
-      alert("Failed to generate PDF. Please try again.");
+      setDownloadError(err instanceof Error
+        ? `Certificate download failed: ${err.message}`
+        : "The certificate could not be downloaded. Please try again.");
     } finally {
       setPdfDownloading(false);
     }
@@ -252,13 +282,9 @@ const Certificate = () => {
             <div className="absolute inset-8 border-2 border-yellow-200 rounded-xl opacity-20"></div>
             
             <div className="relative p-16 text-center">
-              {/* Logo */}
-              <div className="mb-8">
-                <img
-                  src={img}
-                  alt="Institution Logo"
-                  className="w-48 h-14 mx-auto rounded-full shadow-lg bg-white p-1"
-                />
+              <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 shadow-lg">
+                <FontAwesomeIcon icon={faGraduationCap} className="text-xl text-indigo-600" aria-hidden="true" />
+                <span className="text-xl font-bold tracking-tight text-slate-800">LearnSphere</span>
               </div>
 
               {/* Certificate Title */}
@@ -392,6 +418,9 @@ const Certificate = () => {
               </button>
             </div>
           </div>
+          {downloadError && (
+            <p className="mt-4 text-center text-sm text-red-700" role="alert">{downloadError}</p>
+          )}
 
           {/* Certificate Info */}
           <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
