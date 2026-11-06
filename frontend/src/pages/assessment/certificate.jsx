@@ -48,6 +48,9 @@ const Certificate = () => {
     month: "long",
     day: "numeric"
   }) : "";
+  const certificateCourseTitle = course?.course_name?.length > 50
+    ? course.course_name
+    : `${course?.course_name || "Course"} - Complete Course`;
 
   useEffect(() => {
     const issuedCertificate = location.state?.certificate;
@@ -116,7 +119,7 @@ const Certificate = () => {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const center = pageWidth / 2;
       const learnerName = certificate?.learnerName || userDetails?.username || "Student";
-      const courseName = course?.course_name || "Course";
+      const courseName = certificateCourseTitle;
       const issuedDate = currentDate || "Completion date";
       const verificationCode = certificate?.verificationCode || "Not available";
 
@@ -126,61 +129,74 @@ const Certificate = () => {
         author: "LearnSphere",
       });
 
-      pdf.setFillColor(255, 253, 245);
+      pdf.setFillColor(255, 253, 247);
       pdf.rect(0, 0, pageWidth, 210, "F");
-      pdf.setDrawColor(224, 176, 55);
-      pdf.setLineWidth(1.5);
-      pdf.roundedRect(8, 8, pageWidth - 16, 194, 5, 5, "S");
-      pdf.setDrawColor(242, 218, 151);
-      pdf.setLineWidth(0.5);
-      pdf.roundedRect(13, 13, pageWidth - 26, 184, 4, 4, "S");
+      pdf.setDrawColor(30, 41, 59);
+      pdf.setLineWidth(1.4);
+      pdf.rect(7, 7, pageWidth - 14, 196, "S");
+      pdf.setDrawColor(217, 164, 65);
+      pdf.setLineWidth(0.7);
+      pdf.rect(11, 11, pageWidth - 22, 188, "S");
 
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(18);
-      pdf.setTextColor(67, 56, 202);
-      pdf.text("LearnSphere", center, 30, { align: "center" });
+      pdf.setTextColor(30, 41, 59);
+      pdf.text("LearnSphere", center, 27, { align: "center" });
 
-      pdf.setFontSize(28);
-      pdf.setTextColor(217, 153, 0);
-      pdf.text("Certificate of Achievement", center, 50, { align: "center" });
+      pdf.setFontSize(9);
+      pdf.setTextColor(161, 98, 7);
+      pdf.text("CERTIFICATE OF COMPLETION", center, 40, { align: "center", charSpace: 2 });
+      pdf.setFont("times", "bold");
+      pdf.setFontSize(32);
+      pdf.setTextColor(15, 23, 42);
+      pdf.text("Certificate", center, 55, { align: "center" });
 
-      pdf.setDrawColor(235, 190, 75);
-      pdf.line(45, 59, pageWidth - 45, 59);
+      pdf.setDrawColor(217, 164, 65);
+      pdf.line(50, 62, pageWidth - 50, 62);
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(13);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text("This is to proudly certify that", center, 73, { align: "center" });
+      pdf.setFontSize(11);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text("THIS IS PROUDLY PRESENTED TO", center, 74, { align: "center", charSpace: 1.5 });
 
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(25);
-      pdf.setTextColor(109, 40, 217);
+      pdf.setFont("times", "bold");
+      pdf.setFontSize(27);
+      pdf.setTextColor(30, 41, 59);
       pdf.text(pdf.splitTextToSize(learnerName, pageWidth - 60), center, 88, { align: "center" });
 
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(13);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text("has successfully completed the course", center, 102, { align: "center" });
+      pdf.setFontSize(12);
+      pdf.setTextColor(71, 85, 105);
+      pdf.text("For successfully completing the course", center, 104, { align: "center" });
 
-      pdf.setFillColor(236, 253, 245);
-      pdf.setDrawColor(134, 239, 172);
-      pdf.roundedRect(38, 109, pageWidth - 76, 29, 4, 4, "FD");
+      pdf.setFillColor(30, 41, 59);
+      pdf.setDrawColor(217, 164, 65);
+      pdf.roundedRect(38, 111, pageWidth - 76, 29, 3, 3, "FD");
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(19);
-      pdf.setTextColor(5, 150, 105);
+      pdf.setTextColor(255, 255, 255);
       pdf.text(pdf.splitTextToSize(courseName, pageWidth - 92), center, 127, { align: "center" });
 
       pdf.setFont("helvetica", "italic");
       pdf.setFontSize(11);
       pdf.setTextColor(75, 85, 99);
-      pdf.text("Demonstrating dedication, skill, and mastery of the subject matter.", center, 148, { align: "center" });
+      pdf.text("In recognition of the dedication, skill, and commitment shown throughout this learning journey.", center, 151, { align: "center" });
 
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(10);
       pdf.setTextColor(75, 85, 99);
-      pdf.text(`Date issued: ${issuedDate}`, 48, 169);
-      pdf.text(`Certificate ID: ${verificationCode}`, 48, 178);
+      pdf.text(`DATE ISSUED  ${issuedDate}`, 48, 168);
+      pdf.text(`CERTIFICATE ID  ${verificationCode}`, 48, 178);
       pdf.setFontSize(9);
-      pdf.text(`Verify: ${window.location.origin}/verify/${verificationCode}`, 48, 187);
+      pdf.text(`Verify online: ${window.location.origin}/verify/${verificationCode}`, 48, 188);
+      pdf.setDrawColor(37, 99, 145);
+      pdf.setLineWidth(1.2);
+      pdf.circle(pageWidth - 49, 174, 16, "S");
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(7);
+      pdf.setTextColor(37, 99, 145);
+      pdf.text("VERIFIED", pageWidth - 49, 173, { align: "center" });
+      pdf.setFontSize(5);
+      pdf.text("LEARNSPHERE", pageWidth - 49, 178, { align: "center" });
 
       const filename = `${userDetails?.username || "Certificate"}_${course?.course_name || "Course"}_Certificate.pdf`
         .replace(/[<>:"/\\|?*]+/g, "_");
@@ -247,126 +263,112 @@ const Certificate = () => {
         <Confetti />
       )}
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="absolute left-10 top-0 mt-4 ml-0 inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:text-indigo-700"
           >
             <FontAwesomeIcon icon={faArrowLeft} />
             Back
           </button>
-          
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4 shadow-lg">
-            <FontAwesomeIcon icon={faGraduationCap} className="text-3xl text-white" />
+          <div className="text-right">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-700">Achievement unlocked</p>
+            <p className="mt-1 text-slate-600">Congratulations on completing your course.</p>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            Congratulations! 🎉
-          </h1>
-          <p className="text-xl text-gray-600">You've earned your completion certificate!</p>
         </div>
 
-        {/* Certificate */}
-        <div className="max-w-4xl mx-auto">
+        <div className="mx-auto max-w-6xl">
           <div
             id="certificate"
-            className="bg-white rounded-3xl shadow-2xl overflow-hidden border-8 border-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500"
-            style={{
-              background: "linear-gradient(135deg, #fef9e7 0%, #fff 50%, #fef3e2 100%)",
-              position: "relative"
-            }}
+            className="relative overflow-hidden rounded-2xl border border-amber-400 bg-slate-950 p-1.5 shadow-[0_28px_80px_-30px_rgba(15,23,42,0.55)] sm:p-2"
           >
-            {/* Decorative Border */}
-            <div className="absolute inset-4 border-4 border-yellow-300 rounded-2xl opacity-30"></div>
-            <div className="absolute inset-8 border-2 border-yellow-200 rounded-xl opacity-20"></div>
-            
-            <div className="relative p-16 text-center">
-              <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 shadow-lg">
-                <FontAwesomeIcon icon={faGraduationCap} className="text-xl text-indigo-600" aria-hidden="true" />
-                <span className="text-xl font-bold tracking-tight text-slate-800">LearnSphere</span>
-              </div>
+            <div className="relative border border-amber-300 p-1.5 sm:p-2">
+              <div className="relative overflow-hidden border border-amber-300/80 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-[#fffdf7] to-[#f8f3e7] px-5 py-8 text-center sm:px-10 sm:py-10 lg:px-16 lg:py-12">
+                <div className="pointer-events-none absolute -left-20 -top-20 h-56 w-56 rounded-full border border-amber-200/70" />
+                <div className="pointer-events-none absolute -left-16 -top-16 h-48 w-48 rounded-full border border-amber-200/60" />
+                <div className="pointer-events-none absolute -bottom-28 -right-20 h-64 w-64 rounded-full border border-amber-200/70" />
+                <div className="pointer-events-none absolute -bottom-24 -right-16 h-52 w-52 rounded-full border border-amber-200/60" />
 
-              {/* Certificate Title */}
-              <div className="mb-8">
-                <h1 className="text-5xl font-bold text-transparent bg-gradient-to-r from-yellow-600 via-yellow-500 to-orange-500 bg-clip-text mb-4">
-                  Certificate of Achievement
-                </h1>
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <div className="h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent flex-1"></div>
-                  <FontAwesomeIcon icon={faStar} className="text-yellow-500 text-2xl" />
-                  <div className="h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent flex-1"></div>
+                <div className="relative mx-auto flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-white/80 px-5 py-2 shadow-sm">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-amber-300">
+                    <FontAwesomeIcon icon={faGraduationCap} aria-hidden="true" />
+                  </span>
+                  <span className="text-lg font-bold tracking-tight text-slate-900">LearnSphere</span>
                 </div>
-              </div>
 
-              {/* Certificate Content */}
-              <div className="mb-12 space-y-6">
-                <p className="text-xl text-gray-700 leading-relaxed">
-                  This is to proudly certify that
-                </p>
-                
-                <h2 className="text-4xl font-bold text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text py-2">
+                <p className="relative mt-7 text-xs font-bold uppercase tracking-[0.28em] text-amber-700">Official course recognition</p>
+                <h1 className="relative mt-3 font-serif text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                  Certificate of Completion
+                </h1>
+                <div className="relative mx-auto mt-5 flex max-w-xl items-center gap-4 text-amber-600">
+                  <span className="h-px flex-1 bg-amber-300" />
+                  <FontAwesomeIcon icon={faStar} className="text-lg" aria-hidden="true" />
+                  <span className="h-px flex-1 bg-amber-300" />
+                </div>
+
+                <p className="relative mt-7 text-sm font-medium uppercase tracking-[0.18em] text-slate-500">Proudly presented to</p>
+                <h2 className="relative mx-auto mt-3 max-w-4xl break-words font-serif text-3xl font-semibold text-indigo-950 sm:text-4xl lg:text-5xl">
                   {certificate?.learnerName || userDetails?.username || "Student"}
                 </h2>
-                
-                <p className="text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto">
-                  has successfully completed the comprehensive course
+                <div className="mx-auto mt-3 h-0.5 w-36 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+
+                <p className="relative mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+                  For successfully completing the course
                 </p>
-                
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 mx-auto max-w-2xl border border-green-200">
-                  <h3 className="text-3xl font-bold text-transparent bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text">
-                    {course?.course_name?.length > 50 
-                      ? course?.course_name 
-                      : `${course?.course_name} - Complete Course`}
+                <div className="relative mx-auto mt-5 max-w-3xl rounded-lg border border-amber-400 bg-gradient-to-br from-slate-800 via-slate-900 to-indigo-950 px-5 py-5 shadow-xl shadow-slate-900/20 sm:px-8">
+                  <h3 className="break-words text-xl font-semibold leading-snug text-white sm:text-2xl lg:text-3xl">
+                    {certificateCourseTitle}
                   </h3>
                 </div>
-
-                <p className="text-lg text-gray-600 mt-8">
-                  demonstrating dedication, skill, and mastery of the subject matter
+                <p className="relative mt-6 text-sm leading-6 text-slate-600 sm:text-base">
+                  In recognition of the dedication, skill, and commitment demonstrated throughout this learning journey.
                 </p>
-              </div>
 
-              {/* Certificate Details */}
-              <div className="flex flex-col sm:flex-row justify-between items-center mb-12 bg-gray-50 rounded-2xl p-8 mx-8">
-                <div className="flex items-center gap-3 mb-4 sm:mb-0">
-                  <FontAwesomeIcon icon={faCalendar} className="text-indigo-600 text-xl" />
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Date Issued</p>
-                    <p className="text-lg font-bold text-gray-800">{currentDate}</p>
+                <div className="relative mx-auto mt-9 grid max-w-4xl gap-5 border-y border-amber-200 py-5 text-left sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-800">
+                      <FontAwesomeIcon icon={faCalendar} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">Date issued</p>
+                      <p className="mt-1 font-semibold text-slate-900">{currentDate}</p>
+                    </div>
+                  </div>
+
+                  <div className="hidden h-10 w-px bg-amber-200 sm:block" />
+
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-800">
+                      <FontAwesomeIcon icon={faIdCard} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">Certificate ID</p>
+                      <p className="mt-1 break-all font-semibold text-slate-900">{certificate?.verificationCode}</p>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  <FontAwesomeIcon icon={faIdCard} className="text-purple-600 text-xl" />
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Certificate ID</p>
-                    <p className="break-all text-lg font-bold text-gray-800">{certificate?.verificationCode}</p>
-                  </div>
-                </div>
-              </div>
 
-              {/* Signature and Seal */}
-              <div className="flex justify-center items-center">
-                <div className="text-center">
-                  <img
-                    src={seal}
-                    alt="Official Seal"
-                    className="w-32 h-24 mx-auto mb-4 opacity-80"
-                  />
-                  <div className="border-t-2 border-gray-400 pt-2 w-48">
-                    <p className="text-lg font-semibold text-gray-800">Authorized Signature</p>
-                    <p className="text-sm text-gray-600">Learning Platform</p>
+                <div className="relative mt-7 flex flex-col items-center justify-between gap-5 sm:flex-row sm:text-left">
+                  <div className="flex items-center gap-3">
+                    <img src={seal} alt="Certificate verification seal" className="h-16 w-16 object-contain" />
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Authenticated achievement</p>
+                      <a
+                        href={`${window.location.origin}/verify/${certificate?.verificationCode}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-700 underline decoration-indigo-300 underline-offset-4 hover:text-indigo-900"
+                      >
+                        <FontAwesomeIcon icon={faCheckCircle} aria-hidden="true" />
+                        Verify this certificate
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Verification Notice */}
-              <div className="mt-8 text-center">
-                <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm border border-green-200">
-                  <FontAwesomeIcon icon={faCheckCircle} />
-                  <a href={`${window.location.origin}/verify/${certificate?.verificationCode}`} target="_blank" rel="noreferrer" className="underline">
-                    Verify certificate online
-                  </a>
+                  <div className="w-52 border-t border-slate-400 pt-2 text-center">
+                    <p className="font-serif text-lg italic text-slate-800">LearnSphere</p>
+                    <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Authorized platform</p>
+                  </div>
                 </div>
               </div>
             </div>
