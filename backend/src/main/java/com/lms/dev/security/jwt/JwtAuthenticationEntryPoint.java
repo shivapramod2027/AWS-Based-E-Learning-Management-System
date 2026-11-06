@@ -23,7 +23,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        log.error("Unauthorized error: {}", authException.getMessage());
+        log.error("Unauthorized {} {} (Authorization header present: {}): {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                request.getHeader("Authorization") != null,
+                authException.getMessage());
 
         Map<String, Object> body = new HashMap<>();
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);

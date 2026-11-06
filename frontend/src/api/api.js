@@ -27,6 +27,7 @@ api.interceptors.response.use(
       message.destroy()
       message.error("Your session expired. Sign in again to continue.");
       localStorage.removeItem("token");
+      localStorage.removeItem("role");
       const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
       const loginUrl = currentPath.startsWith("/login")
         ? "/login"
