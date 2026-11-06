@@ -1,0 +1,67 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/lms?createDatabaseIfNotExist=true}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          connectiontimeout: ${MAIL_SMTP_TIMEOUT:10000}
+          timeout: ${MAIL_SMTP_TIMEOUT:10000}
+          writetimeout: ${MAIL_SMTP_TIMEOUT:10000}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:true}
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        transaction:
+          jta:
+            platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+app:
+  mail:
+    from: ${MAIL_FROM:}
+  jwtSecret: ${JWT_SECRET}
+  jwtExpirationMs: ${JWT_EXPIRATION:86400000}
+  default-admin:
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}
+    email: ${ADMIN_EMAIL:}
+  demo-courses:
+    enabled: ${SEED_DEMO_COURSES:false}
+    target-count: ${DEMO_COURSE_TARGET:300}
+  demo-content:
+    enabled: ${SEED_DEMO_CONTENT:true}
+  course-catalog:
+    url: ${COURSE_CATALOG_URL:}
+    api-key: ${COURSE_CATALOG_API_KEY:}
+  payments:
+    mode: ${PAYMENT_MODE:demo}
+    cashfree-client-id: ${CASHFREE_CLIENT_ID:}
+    cashfree-client-secret: ${CASHFREE_CLIENT_SECRET:}
+    cashfree-environment: ${CASHFREE_ENVIRONMENT:sandbox}
+    frontend-url: ${FRONTEND_URL:http://localhost:3000}
+
+logging:
+  level:
+    com.lms.dev: ${APP_LOG_LEVEL:DEBUG}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:DEBUG}
